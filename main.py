@@ -15,15 +15,15 @@ def compression_fn(p1, p2, p3):
 	for y in xrange(0,4):
 		p[0][y] = int(p1[y*32:y*32+31],2)
 	for y in xrange(0,4):
-		p[1][y] = int(p1[y*32:y*32+31],2)
+		p[1][y] = int(p2[y*32:y*32+31],2)
 	for y in xrange(0,4):
-		p[2][y] = int(p1[y*32:y*32+31],2)
+		p[2][y] = int(p3[y*32:y*32+31],2)
 	
-	x0 = (operator.and_(p[0][0], p[1][0]) + operator.and_(p[0][0], p[2][0]))/math.pow(2,32)
-	y0 = (operator.and_(p[0][1], p[1][1]) + operator.and_(p[0][1], p[2][1]))/math.pow(2,32)
-	z0 = (operator.and_(p[0][2], p[1][2]) + operator.and_(p[0][2], p[2][2]))/math.pow(2,32)
-	u0 = (operator.and_(p[0][3], p[1][3]) + operator.and_(p[0][3], p[2][3]))/math.pow(2,32)
-	k = (operator.and_(p[0][1],p[1][1]) + operator.and_(p[0][1],p[2][1]))/math.pow(2,28)
+	x0 = (operator.xor(p[2][0], p[1][0]) + operator.xor(p[0][0], p[2][0]))/math.pow(2,32)
+	y0 = (operator.xor(p[2][1], p[1][1]) + operator.xor(p[0][1], p[2][1]))/math.pow(2,32)
+	z0 = (operator.xor(p[2][2], p[1][2]) + operator.xor(p[0][2], p[2][2]))/math.pow(2,32)
+	u0 = (operator.xor(p[2][3], p[1][3]) + operator.xor(p[0][3], p[2][3]))/math.pow(2,32)
+	k = (operator.xor(p[2][1],p[1][1]) + operator.xor(p[0][1],p[2][1]))/math.pow(2,28)
 
 	if k<0 or k>16.6:
 	 	k = 5
@@ -56,7 +56,9 @@ def generate_hash(M, N, msg_blocks, H):
 	P = []
 	O = [0 for x in range(L)]
 	H_i = H
+
 	for x in xrange(0,L):
+		#print H_i
 		h1 = compression_fn(H_i[0], H_i[1],msg_blocks[x])
 		h2 = compression_fn(H_i[1], H_i[2],msg_blocks[x])
 		h3 = compression_fn(H_i[2], H_i[0],msg_blocks[x])
@@ -66,9 +68,10 @@ def generate_hash(M, N, msg_blocks, H):
 		H_i[0] = h1
 		H_i[1] = h2
 		H_i[2] = h3
-		final_O = 0
+	final_O = 0
 	for x in xrange(0,L):
 		final_O = final_O ^ int(O[x])
+	#	print final_O
 	final_O = bin(final_O)[2:].rjust(N,'0')
 
 	h1 = compression_fn(H_i[0], H_i[1],final_O)
@@ -116,7 +119,7 @@ def pad_msg(msg, block_size):
 	return final_msg
 
 
-def construct_hash(msg):
+def construct_hash(msg, hash_file):
 	# M: length of individual msg block (in bytes)
 	# N: length of final and intermediate hash values (in bytes)
 	M = 16 
@@ -129,7 +132,6 @@ def construct_hash(msg):
 	# 	message = message + x
 	msg_bin = str(bin(int(binascii.b2a_hex(msg), 16)))
 	
-	#hash_file = open('hash.txt','w')
 	#pad message
 	padded_msg = pad_msg(msg_bin, M*8) 
 	
@@ -140,20 +142,20 @@ def construct_hash(msg):
 	H[1]='10000111101001110000011000001110100000111111111111101011101011101001100101101110101110111110101100011110001101010111001100000100'
 	H[2]='10111011010010100010100111001001100001100111001011111011001011100110011110111001110011101100000111101010000101101010000011010011'
 	
-	final_hash_value = generate_hash(M, N*8, msg_blocks, H)[:-1]
+	final_hash_value = generate_hash(M, N*8, msg_blocks, H)[:-1].ljust(32,'0')
 	print 'Hash : '+final_hash_value
-	#hash_file.write(final_hash_value+'\n')
-	#print len(final_hash_value)
+	hash_file.write(final_hash_value+'\n')
+	print len(final_hash_value)
 
 def performance_check():
 	msg = list('this is sample text.')
-	
-	for x in xrange(0,100):
-		y = random.randint(0, len(msg)-1)
-		z = random.randint(0, 256)
-		msg[y] = chr(97+(ord(msg[y])+z)%26)
-		print 'msg: '+''.join(msg)
-		construct_hash(''.join(msg))
+	with open('hash.txt','w') as hash_file:
+		for x in xrange(0,100000):
+			y = random.randint(0, len(msg)-1)
+			z = random.randint(0, 256)
+			msg[y] = chr(97+(ord(msg[y])+z)%26)
+			print 'msg: '+''.join(msg)
+			construct_hash(''.join(msg), hash_file)
 
 
 if __name__ == '__main__':
