@@ -148,15 +148,17 @@ def construct_hash(msg, hash_file):
 	print len(final_hash_value)
 
 def performance_check():
-	msg = list('this is sample text.')
+	msg = list('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 	with open('hash.txt','w') as hash_file:
-		for x in xrange(0,100000):
+		for x in xrange(0,100):
 			y = random.randint(0, len(msg)-1)
 			z = random.randint(0, 256)
-			msg[y] = chr(97+(ord(msg[y])+z)%26)
+			p = chr(97+(ord(msg[y])+z)%26)
+			if p == msg[y]:
+				continue
+			msg[y] = p
 			print 'msg: '+''.join(msg)
 			construct_hash(''.join(msg), hash_file)
-
 
 if __name__ == '__main__':
 	performance_check()
