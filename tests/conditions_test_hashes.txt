@@ -1,0 +1,8 @@
+c1: 72726e0ee738136215b8fcf216b24798
+c4: 2371052c001a08d937e16d34ff9d7159 
+c2: 6f3a4d5cff06c9dc733032350e8aa899
+c3: 4e5312532e40021b2df57e412d5821eb
+c5: 5a024f3b01e5a07bcba3a90b28c13205 //changed h1 first bit to 0
+c6: 5f44752e91c8a76bc7252a28fc9e3656 //changed h2 first bit to 0
+c7: 5d5d1a49f488be0eb5f9a76ad1fa55ad //changed h3 first bit to 0
+
