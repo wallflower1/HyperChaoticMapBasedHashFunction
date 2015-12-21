@@ -3,6 +3,8 @@ import sys, os, binascii
 import math, random, operator
 import RK4lorenz
 
+# @author sushmita singh
+
 # step1: take msg input, parse it into binary representation
 # step2: pad the msg so that its length is a multiple of M(128)
 # step3: generate key parameters h1,h2,h3,h* of length N(128)
@@ -148,7 +150,8 @@ def construct_hash(msg, hash_file):
 	print len(final_hash_value)
 
 def performance_check():
-	msg = list('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+	inp_msg = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+	msg = list(inp_msg)
 	with open('hash.txt','w') as hash_file:
 		for x in xrange(0,100):
 			y = random.randint(0, len(msg)-1)

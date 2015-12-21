@@ -1,13 +1,17 @@
 import sys, collections
 import csv
 
+# @author sushmita singh
+
 def fy(y0, t, params):
 
+	# 3D lorenz system
 	# ytemp = [0.0 for x in range(len(y0))]
 	# ytemp[0] = params[0]*(y0[1]-y0[0])
 	# ytemp[1] = y0[0]*(params[2]-y0[2])-y0[1]
 	# ytemp[2] = (y0[0]*y0[1])-(params[1]*y0[2])
 
+	# 4D lorenz system
 	ytemp = [0.0 for x in range(len(y0))]
 	ytemp[0] = params[0]*(y0[1]-y0[0])
 	ytemp[1] = y0[0]*(params[2]-y0[2])-y0[1] + y0[3]
